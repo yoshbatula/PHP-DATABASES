@@ -31,18 +31,18 @@
 
         .update-btn {
             background-color: green;
-        }
-
-        .update-btn a {
             color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
         }
 
         .delete-btn {
             background-color: red;
-        }
-
-        .delete-btn a {
             color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
         }
     </style>
 
@@ -66,12 +66,13 @@
                 <td><?php echo htmlspecialchars($row['email']); ?></td>
                 <td><?php echo htmlspecialchars($row['timecreated']); ?></td>
                 <td>
-                    <a href="updateform.php?id<?=$row['user_id'] ?>" name="update">Update</a>
-                    <a href="delete.php?id=<?$row['user_id'] ?>" onclick="return confirm('Are you sure you want to delete this info?')"></a>
+                    <form action="updateform.php" method="POST">
+                        <input type="hidden" name="user_id" value="<?php echo $row['user_id']; ?>">
+                        <button class="update-btn" type="submit" name="update">Update</button>
+                    </form>
                 </td>
             </tr>
         <?php } ?>
-
     </table>
 
 </body>
