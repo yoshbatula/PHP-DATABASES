@@ -9,71 +9,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TABLE</title>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" />
+
 </head>
 <body>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        table td, th {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
 
-        a {
-            text-decoration: none;
-            color: black;
-        }
+    <div class="container mt-4">
+        <h2 class="text-center">User Table</h2>
+        <table id="myTable" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Time Created</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (isset($result) && mysqli_num_rows($result) > 0): ?>
+                    <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($row['user_id']); ?></td>
+                            <td><?php echo htmlspecialchars($row['username']); ?></td>
+                            <td><?php echo htmlspecialchars($row['role']); ?></td>
+                            <td><?php echo htmlspecialchars($row['full_name']); ?></td>
+                            <td><?php echo htmlspecialchars($row['email']); ?></td>
+                            <td><?php echo htmlspecialchars($row['timecreated']); ?></td>
+                            <td>
+                                <form action="updateform.php" method="POST">
+                                    <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($row['user_id']); ?>">
+                                    <button class="btn btn-primary btn-sm" type="submit" name="update">Update</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="7" class="text-center">No records found</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 
-        .update-btn {
-            background-color: green;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
+   
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 
-        .delete-btn {
-            background-color: red;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-    </style>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Role</th>
-            <th>Full Name</th>
-            <th>Email</th>
-            <th>Time Created</th>
-            <th>Action</th>
-        </tr>
+    
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 
-        <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-            <tr>
-                <td><?php echo htmlspecialchars($row['user_id']); ?></td>
-                <td><?php echo htmlspecialchars($row['username']); ?></td>
-                <td><?php echo htmlspecialchars($row['role']); ?></td>
-                <td><?php echo htmlspecialchars($row['full_name']); ?></td>
-                <td><?php echo htmlspecialchars($row['email']); ?></td>
-                <td><?php echo htmlspecialchars($row['timecreated']); ?></td>
-                <td>
-                    <form action="updateform.php" method="POST">
-                        <input type="hidden" name="user_id" value="<?php echo $row['user_id']; ?>">
-                        <button class="update-btn" type="submit" name="update">Update</button>
-                    </form>
-                </td>
-            </tr>
-        <?php } ?>
-    </table>
+    <script>
+        $(document).ready(function () {
+            $('#myTable').DataTable({
+                "paging": true,  
+                "searching": true, 
+                "ordering": true,  
+                "info": true,  
+                "lengthMenu": [1, 2, 3, 4, 5, 6, 7, 8, 9 , 10] 
+            });
+        });
+    </script>
 
 </body>
 </html>
