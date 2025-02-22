@@ -48,8 +48,7 @@
                                 <form action="updateform.php" method="POST">
                                     <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($row['user_id']); ?>">
                                     <button class="btn btn-primary btn-sm" type="submit" name="update">Update</button>
-                                </form>
-                            </td>
+                                </form>  
                         </tr>
                     <?php } ?>
                 <?php else: ?>
