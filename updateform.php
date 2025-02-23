@@ -53,6 +53,7 @@ if (isset($_POST['save'])) {
     <title>Update User</title>
 </head>
 <body>
+    <!-- UPDATE FORM -->
     <form action="updateform.php" method="POST">
         <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>">
         <label>Username:</label>
