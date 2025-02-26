@@ -25,22 +25,27 @@
 
 include 'dbconnect.php';
 
+// So in this part of the code, we are checking if the form is submitted.
 if(isset($_POST['submit'])) {
+    // If the form is submitted, we will check if the file is uploaded and if there is no error.
     if(isset($_FILES['profile']) && $_FILES['profile']['error'] == 0) {
         $name = $_POST['name'];
         $email = $_POST['email'];
 
-       
+    //   We will create a directory where the uploaded file will be stored.
         $targetDir = __DIR__ . "/upload/";
         if (!is_dir($targetDir)) {
             mkdir($targetDir, 0777, true);
         }
 
+        // We will get the file name, file path, file type, and allowed file types.
         $fileName = basename($_FILES["profile"]["name"]);
         $targetFilePath = $targetDir . $fileName;
         $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
         $allowedTypes = array('jpg', 'png', 'jpeg', 'gif');
 
+        // We will check if the file type is allowed. If it is allowed, we will move the uploaded file to the target directory which is the upload folder. 
+        // If the file is moved successfully, we will insert the data to the database.
         if(in_array(strtolower($fileType), $allowedTypes)) {
             if(move_uploaded_file($_FILES["profile"]["tmp_name"], $targetFilePath)) {
                 $query = "INSERT INTO user (name, email, image) VALUES (?, ?, ?)";
@@ -66,6 +71,7 @@ if(isset($_POST['submit'])) {
         echo "No file uploaded or an error occurred!";
     }
 
+    // In here we are just closing the connection.
     $conn->close();
 }
 ?>
