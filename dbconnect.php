@@ -1,6 +1,6 @@
 <?php
     $host = "localhost";
-    $dbname = "practice";
+    $dbname = "laboratory-exam";
     $user = "root";
     $pass = "";
 

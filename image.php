@@ -35,6 +35,7 @@ if(isset($_POST['submit'])) {
     //   We will create a directory where the uploaded file will be stored.
         $targetDir = __DIR__ . "/upload/";
         if (!is_dir($targetDir)) {
+            // If the directory does not exist, it Forcely create an folder with full authorization.
             mkdir($targetDir, 0777, true);
         }
 
