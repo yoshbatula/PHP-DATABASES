@@ -1,74 +1,85 @@
+
 <?php
 session_start();
 include 'dbconnect.php';
 
-if (isset($_POST['user_id'])) {
-    $user_id = $_POST['user_id'];
-
-    $query = "SELECT * FROM users WHERE user_id = ?";
-    $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, "i", $user_id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    $user = mysqli_fetch_assoc($result);
-
-    if ($user) {
-        $_SESSION['user_id'] = $user['user_id'];
-        $_SESSION['username'] = $user['username'];
-        $_SESSION['role'] = $user['role'];
-        $_SESSION['full_name'] = $user['full_name'];
-        $_SESSION['email'] = $user['email'];
-    } else {
-        echo "User not found.";
-        exit();
-    }
-} else {
-    echo "Invalid request.";
+if (!isset($_GET['user_id'])) {
+    header("Location: index.php");
     exit();
 }
 
-if (isset($_POST['save'])) {
-    $user_id = $_SESSION['user_id'];
+$user_id = $_GET['user_id'];
+$query = "SELECT * FROM users WHERE user_id = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+$stmt->close();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $role = $_POST['role'];
     $full_name = $_POST['full_name'];
-    $email = $_POST['email'];
 
-    $query = "UPDATE users SET username = ?, role = ?, full_name = ?, email = ? WHERE user_id = ?";
-    $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, "ssssi", $username, $role, $full_name, $email, $user_id);
-    
-    if (mysqli_stmt_execute($stmt)) {
-        echo "<script>alert('Successfully updated');</script>";
+    $updateQuery = "UPDATE users SET username=?, role=?, full_name=? WHERE user_id=?";
+    $stmt = $conn->prepare($updateQuery);
+    $stmt->bind_param("sssi", $username, $role, $full_name, $user_id);
+
+    if ($stmt->execute()) {
+        $_SESSION['message'] = "User updated successfully!";
         header("Location: index.php");
         exit();
     } else {
-        echo "<script>alert('Update failed');</script>";
+        $_SESSION['message'] = "Error updating user.";
     }
+    $stmt->close();
 }
 ?>
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Update User</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <!-- UPDATE FORM -->
-    <form action="updateform.php" method="POST">
-        <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>">
-        <label>Username:</label>
-        <input type="text" name="username" value="<?php echo $_SESSION['username']; ?>"><br>
-
-        <label>Role:</label>
-        <input type="text" name="role" value="<?php echo $_SESSION['role']; ?>"><br>
-
-        <label>Full Name:</label>
-        <input type="text" name="full_name" value="<?php echo $_SESSION['full_name']; ?>"><br>
-
-        <label>Email:</label>
-        <input type="email" name="email" value="<?php echo $_SESSION['email']; ?>"><br><br>
-
-        <button type="submit" name="save">Save Changes</button>
-    </form>
+    <div class="container mt-4">
+        <h2>Edit User</h2>
+        <?php if (isset($_SESSION['message'])): ?>
+            <div class="alert alert-info"><?php echo $_SESSION['message']; unset($_SESSION['message']); ?></div>
+        <?php endif; ?>
+        <form action="edituser.php?user_id=<?php echo $user_id; ?>" method="POST">
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" value="<?php echo htmlspecialchars($user['username']); ?>" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Role</label>
+                <input type="text" name="role" class="form-control" value="<?php echo htmlspecialchars($user['role']); ?>" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="full_name" class="form-control" value="<?php echo htmlspecialchars($user['full_name']); ?>" required>
+            </div>
+            <button type="submit" class="btn btn-success">Update</button>
+            <a href="index.php" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
 </body>
 </html>
+```
+
+<td>
+    <a href="edituser.php?user_id=<?php echo htmlspecialchars($row['user_id']); ?>" class="btn btn-warning btn-sm">Edit</a>
+    <a href="updateform.php?user_id=<?php echo htmlspecialchars($row['user_id']); ?>" class="btn btn-primary btn-sm">Update</a>
+    <form action="index.php" method="POST" style="display:inline;">
+        <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($row['user_id']); ?>">
+        <button class="btn btn-danger btn-sm" type="submit" name="delete" onclick="return confirm('Are you sure?')">Delete</button>
+    </form>  
+</td>
+```
+
+
